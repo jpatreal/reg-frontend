@@ -7,25 +7,29 @@
       </v-btn>
     </v-layout>
     <v-row justify="center">
-      <v-col cols="6">
-          <p class="text-center headline font-weight-bold pa-2">Login to Events</p>
+      <v-col
+        cols="6"
+      >
+          <p class="text-center headline font-weight-medium pa-2">Sign up Account</p>
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-col cols="4">
-        <LoginCard />
+      <v-col
+        cols="6"
+      >
+      <SignupCard />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import LoginCard from '@/components/LoginCard'
+import SignupCard from '@/components/SignupCard'
 
 export default {
-  name: 'login',
+  name: 'signup',
   components: {
-    LoginCard
+    SignupCard
   }
 }
 </script>
