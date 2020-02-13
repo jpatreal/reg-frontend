@@ -49,11 +49,11 @@
           </v-list>
         </v-menu>
       </template>
-      <template v-slot:item.date="{ item }">
-        <span>{{ item.date | dateToWords }}</span>
+      <template v-slot:item.startDate="{ item }">
+        <span>{{ item.startDateTime | dateToWords }}</span>
       </template>
       <template v-slot:item.startTime="{ item }">
-        <span>{{ item.startTime | localTime }} - {{ item.endTime | localTime }}</span>
+        <span>{{ item.startDateTime | localTime }} - {{ item.endDateTime | localTime }}</span>
       </template>
     </v-data-table>
   </v-container>
@@ -63,12 +63,11 @@
 import EventService from '@/services/EventService'
 import AdminEventService from '@/services/AdminServices/EventService'
 import AddEventDialog from '@/components/AdminComponents/AddEventDialog'
-import dateToWords from '@/mixins/momentDateToWordsMixin'
-import localTime from '@/mixins/momentLocalTimeMixin'
+import momentDateToWords from '@/mixins/momentDateToWordsMixin'
 
 export default {
   name: 'AdminDashboard',
-  mixins: [ dateToWords, localTime ],
+  mixins: [ momentDateToWords ],
   components: {
     AddEventDialog
   },
@@ -78,12 +77,11 @@ export default {
       search: '',
       headers: [
         { text: 'Title', value: 'title' },
-        { text: 'Date', value: 'date' },
-        { text: 'Time', value: 'startTime' },
+        { text: 'Date', value: 'startDate' },
+        { text: 'Time(Start - End)', value: 'startTime' },
         { text: 'Status', value: 'cancelled' },
         { text: 'Actions', value: 'action' }
       ],
-      events: [],
       options: [
         { title: 'View Details' },
         { title: 'Cancel Event' },
@@ -92,19 +90,6 @@ export default {
     }
   },
   methods: {
-    initEvents () {
-      this.tableLoading = true
-      EventService.getEvents()
-        .then(res => {
-          this.events = res.data
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-        .finally(() => {
-          this.tableLoading = false
-        })
-    },
     actionMethods (dialog, eventId) {
       if (dialog === 'Cancel Event') {
         this.$swal({
@@ -123,12 +108,7 @@ export default {
                     title: 'Success!',
                     text: 'Event has been cancelled.'
                   })
-                  .then(res => {
-                    if (res.value) {
-                      this.initEvents()
-                    }
-                  })
-                  
+                  this.$store.dispatch('event/GET_ALL_EVENTS')
                 })
             }
           })
@@ -150,11 +130,7 @@ export default {
                     icon: 'success',
                     text: 'Event has been removed.'
                   })
-                  .then(doc => {
-                    if (doc.value) {
-                      this.initEvents()
-                    }
-                  })
+                  this.$store.dispatch('event/GET_ALL_EVENTS')
                 })
             }
           })
@@ -163,7 +139,12 @@ export default {
   },
   created () {
     this.$store.dispatch('adminAuth/GET_LOGGED_ADMIN')
-    this.initEvents()
+    this.$store.dispatch('event/GET_ALL_EVENTS')
+  },
+  computed: {
+    events () {
+      return this.$store.getters['event/events']
+    }
   }
 }
 </script>

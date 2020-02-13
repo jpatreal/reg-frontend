@@ -3,7 +3,7 @@ import axios from 'axios'
 import VueCookie from 'vue-cookie'
 
 const state = {
-  user: '',
+  user: {},
   isFetching: ''
 }
 
@@ -28,6 +28,11 @@ const mutations = {
   },
   SET_USER_EVENTS (state, payload) {
     state.user.events = state.user.events + payload.eventId
+    
+  },
+  REMOVE_USER_EVENT (state, payload) {
+    let events = [state.user.events]
+    events - payload.eventId
   },
   DELETE_USER_STATE (state) {
     state.user = {}
@@ -49,6 +54,9 @@ const actions = {
         .catch(err => {
           reject(err)
         })
+        .finally(() => {
+          commit('SET_FETCHING', false)
+        })
     })
   },
   SET_USER ({ commit }, payload) {
@@ -67,7 +75,20 @@ const actions = {
           reject(err)
         })
     })
-    
+  },
+  REMOVE_EVENT_USER ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      UserService.unRegisterEvent({
+        eventId: payload.eventId
+      })
+        .then(res => {
+          commit('REMOVE_USER_EVENT', payload)
+          resolve(res)
+        })
+        .catch(err => {
+          reject(err)
+        })
+    })  
   },
   DELETE_USER_STATE ({ commit }) {
     commit('DELETE_USER_STATE')

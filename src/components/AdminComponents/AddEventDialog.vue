@@ -25,7 +25,7 @@
                   outlined 
                   type="datetime-local" 
                   label="Start Date/Time" 
-                  v-model="startdatetime">
+                  v-model="startDateTime">
                 </v-text-field>
               </v-col>
               <v-col cols="6" class="pt-0">
@@ -33,7 +33,7 @@
                   outlined 
                   type="datetime-local" 
                   label="End Date/Time" 
-                  v-model="enddatetime">
+                  v-model="endDateTime">
                 </v-text-field>
               </v-col>
               <v-col cols="12" class="pt-0">
@@ -63,9 +63,8 @@ export default {
       title: '',
       venue: '',
       place: '',
-      date: '',
-      startdatetime: '',
-      enddatetime: '',
+      startDateTime: '',
+      endDateTime: '',
       details: ''
     }
   },
@@ -75,14 +74,13 @@ export default {
       this.$refs.form.reset()
     },
     addEvent () {
-      EventService.addEvent({
+      this.$store.dispatch('event/ADD_EVENT', {
         title: this.title,
         venue: this.venue,
         place: this.place,
-        date: this.startdatetime,
-        startTime: this.startdatetime,
-        endTime: this.enddatetime,
-        details: this.details,
+        startDateTime: this.startDateTime,
+        endDateTime: this.endDateTime,
+        details: this.details
       })
         .then(() => {
           this.$swal({
@@ -95,7 +93,7 @@ export default {
               if (result.value) {
                 this.dialog = false
                 this.$refs.form.reset()
-                this.$router.go()
+                this.$store.dispatch('event/GET_ALL_EVENTS')
               }
             })
         })

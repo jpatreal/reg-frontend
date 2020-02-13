@@ -19,8 +19,8 @@
         <v-card flat class="pa-3">
           <v-row>
             <v-col cols="1" class="text-center pt-5">
-              <div><span class="red--text">{{ event.date | dateOnly }}</span></div>
-              <div><span class="headline font-weight-medium">{{ event.date | dayOnly }}</span></div>
+              <div><span class="red--text">{{ event.startDateTime | dateOnly }}</span></div>
+              <div><span class="headline font-weight-medium">{{ event.startDateTime | dayOnly }}</span></div>
             </v-col>
             <v-col cols="1">
               <v-img
@@ -31,7 +31,7 @@
             </v-col>
             <v-col cols="3">
               <div><span class="font-weight-bold">{{ event.title }}</span></div>
-              <div><span class="grey--text">{{ event.startTime | localTime }} - {{ event.endTime | localTime }}</span></div>
+              <div><span class="grey--text">{{ event.startDateTime | localTime }} - {{ event.endDateTime | localTime }}</span></div>
               <div><span>{{ event.venue }}</span></div>
             </v-col>
             <v-spacer></v-spacer>
@@ -43,8 +43,7 @@
             <v-col cols="2" class="text-center mt-3">
               <v-btn
                 text
-                large
-              >
+                large>
                 <v-icon large>more_vert</v-icon>
               </v-btn>
             </v-col>
@@ -52,6 +51,11 @@
         </v-card>
       </v-col>
     </v-row>
+    <div v-if="loading">
+      <v-skeleton-loader type="list-item-avatar-three-line" :loading="loading" class="pb-3"></v-skeleton-loader>
+      <v-skeleton-loader type="list-item-avatar-three-line" :loading="loading" class="pt-3 pb-3"></v-skeleton-loader>
+      <v-skeleton-loader type="list-item-avatar-three-line" :loading="loading" class="pt-3"></v-skeleton-loader>
+    </div>
   </v-container>
 </template>
 
@@ -64,14 +68,22 @@ export default {
   mixins: [ dateToWords ],
   data () {
     return {
+      loading: false,
       myEvents: ''
     }
   },
   methods: {
     initMyEvents () {
+      this.loading = true
       UserService.myEvents()
         .then(res => {
           this.myEvents = res.data.events
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .finally(() => {
+          this.loading = false
         })
     }
   },
